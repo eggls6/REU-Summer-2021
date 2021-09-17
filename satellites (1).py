@@ -1,16 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
 
 import pandas as pd               
 import numpy as np
 import math
-
-
-# In[2]:
-
 
 import spiceypy as sp
 import astropy.coordinates
@@ -18,10 +12,6 @@ import re
 import sgp4.api as sg
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-
-
-# In[3]:
-
 
 import matplotlib.pyplot as plt
 import os
@@ -33,10 +23,6 @@ import datetime as dt
 
 
 # #### Let us start with reading in the first 10000 LSST observations for Main Belt Asteroids (S1 in the Synthetic Solar System model)
-
-# In[4]:
-
-
 path = "/data/projects/lsst/baseline_fbs_v1p7p1/"
 dir_list = os.listdir(path)
 
@@ -47,36 +33,17 @@ for d in dir_list:
         dflist.append(pd.read_hdf('/data/projects/lsst/baseline_fbs_v1p7p1/'+d+'/visit-0000000.h5'))
         dflist.append(pd.read_hdf('/data/projects/lsst/baseline_fbs_v1p7p1/'+d+'/visit-0010000.h5'))
 
-
-# In[5]:
-
-
 # every dataframe looks like this
 dflist[0]
-
-
-# In[6]:
-
 
 # concatenate them into a single dataframe
 dfin=pd.concat(dflist)
 
-
-# In[7]:
-
-
 # we can sort the resulting dataframe by by FieldID
 dfin.sort_values(['FieldID'], inplace=True)
 
-
-# In[8]:
-
-
 # then grouping and counting is a little faster. It seems that FieldID 0 has the most observations
 dfin.groupby(['FieldID']).count()['ObjID']
-
-
-# In[9]:
 
 
 def icrf2radec(pos, deg=True):
@@ -124,9 +91,6 @@ def icrf2radec(pos, deg=True):
     return ra, dec
 
 
-# In[10]:
-
-
 def radec2icrf(ra, dec, deg=True):
     """Convert Right Ascension and Declination to ICRF xyz unit vector.
     Geometric states on unit sphere, no light travel time/aberration correction.
@@ -160,69 +124,22 @@ def radec2icrf(ra, dec, deg=True):
     return array([x, y, z])
 
 
-# In[ ]:
-
-
-
-
-
-# In[11]:
-
-
 field_ids = dfin['FieldID'].unique()
 
-
-# In[12]:
-
-
 dates = dfin['FieldMJD'].unique()
-
-
-# In[13]:
-
 
 print("Earliest field date: " + str(min(dates)) + " or 10-01-2022 at 23:39:19.663 UTC")
 print("Last field date: " + str(max(dates)) + " or 10-30-2022 at 05:03:20.104 UTC")
 
-
-# In[ ]:
-
-
-
-
-
-# In[14]:
-
-
 with open('starlink tle.txt') as f:
     starlinks = f.read().splitlines() 
 
-
-# In[15]:
-
-
 chunks = [starlinks[n:n + 3] for n in range(0, len(starlinks), 3)]
-
-
-# In[16]:
-
-
-chunks
-
-
-# In[17]:
-
 
 print("There are " + str(len(chunks)) + " satellites")
 
 
-# In[18]:
-
-
 import warnings
-
-
-# In[19]:
 
 
 def bearing(lat1, long1, lat2, long2):
@@ -244,8 +161,8 @@ def bearing(lat1, long1, lat2, long2):
     bear = np.arctan2(b2, b1)
     
     return bear
-    
-    
+ 
+
 def cross_track_distance(lat1, long1, lat2, long2, lat3, long3):
     '''
     Finds the cross track distance from a point to line
@@ -271,9 +188,6 @@ def cross_track_distance(lat1, long1, lat2, long2, lat3, long3):
     dist = np.arcsin(np.sin(sep.radian) * np.sin((bear_1_3) - bear_1_2))
     
     return dist
-
-
-# In[27]:
 
 
 warnings.filterwarnings('ignore')
@@ -342,8 +256,7 @@ for ch in chunks:
             print()
             flag_2 = True
             break  # break out of for loop of the fields, go to next satellite
-            
-            
+                
         # only successful satellite points
         if any(ra_vals):
             good_obj_ra, good_obj_dec = [], []
@@ -388,22 +301,3 @@ for ch in chunks:
                 print("Satellite times:")
                 print(str(sat_times))
 #                 print(str(sat_times)[1:-1])  # remove brackets from list output
-
-
-# In[ ]:
-
-
-
-
-
-# In[21]:
-
-
-cross_track_distance(0, 0, np.pi/4, 0, 0, np.pi/4)
-
-
-# In[22]:
-
-
-cross_track_distance(0, 0, np.pi/4, 0, np.pi/4, 0)
-
