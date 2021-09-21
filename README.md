@@ -1,5 +1,5 @@
 # REU-Summer-2021
-Determing the degree of obstruction of Solar System object observations by current Starlink satellites in the LSST field of view.
+This project assesses the magnitude of obstruction of Solar System object observations by current Starlink satellites in the LSST field of view.
 
 ## Table of contents
 * [Background](#background)
@@ -9,7 +9,11 @@ Determing the degree of obstruction of Solar System object observations by curre
 * [License](#license)
 
 ## Background
-This project assesses the magnitude of obstruction of Solar System object observations by current Starlink satellites in the LSST field of view.
+Vera C. Rubin Observatory will be a key facility for small body science in planetary astronomy over the next decade. It will carry out the Legacy Survey of Space and Time (LSST), observing the sky repeatedly over the course of ten years using a 6.5 m effective diameter telescope with a 9.6 square degree field of view, reaching approximately r = 24.5 mag per visit. The resulting dataset will provide extraordinary opportunities for both discovery and characterization of large numbers (10–100 times more than currently known) of small solar system bodies, furthering studies of planetary formation and evolution. [1]
+
+Existing and planned satellite constellations threaten the success of LSST, Starlink being the largest contributor. At a minimum, a fraction of the area being imaged is lost to the sun-illuminated trails or significantly reduced in S/N (signal-to-noise ratio). [2]
+
+This project uses only the currently orbiting 1600 Starlink satellites currently in orbit; with another 12,000 already approved for launch and 30,000 more pending approval, the magnitude of interference determined by this project would only increase dramatically. 
 
 ## How to Use
 Certain files are necessary to run the code. The block of code that imports this data and compiles it into a dataframe is listed below:
@@ -40,6 +44,8 @@ Project is created with:
 * Python version: 3.6.13
 
 ## Attributions
+[1] Jones, R. L., Bannister, M. T., Bolin, B. T., Chandler, C. O., Chesley, S. R., Eggl, S., Greenstreet, S., Holt, T. R., Hsieh, H. H., Ivezic, Z., Juric, M., Kelley, M. S., Knight, M. M., Malhotra, R., Oldroyd, W. J., Sarid, G., Schwamb, M. E., Snodgrass, C., Solontoi, M., &amp; Trilling, D. E. (2021). The Scientific Impact of the Vera C. Rubin Observatory’s Legacy Survey of Space and Time (LSST) for Solar System Science. Bulletin of the AAS, 53(4). [https://doi.org/10.3847/25c2cfeb.d8909f28](https://doi.org/10.3847/25c2cfeb.d8909f28)
+[2] Constance	Walker, & Jeffrey	Hall, & Lori	Allen, & Richard	Green, & Patrick	Seitzer, & Tony	Tyson, & Amanda	Bauer, & Kelsie	Krafton, & James	Lowenthal, & Joel	Parriott, & Phil	Puxley, & Tim	Abbott, & Gaspar	Bakos, & John	Barentine, & Cees	Bassa, & Blakeslee, John & Andrew	Bradshaw, & Cooke, Jeff & Daniel	Devost, & Yoachim, Peter. (2020). Impact of Satellite Constellations on Optical Astronomy and Recommendations Toward Mitigations. Bulletin of the AAS. 52. [https://doi.org/10.3847/25c2cfeb.346793b8](https://doi.org/10.3847/25c2cfeb.346793b8). 
 * The functions ```icrf2radec``` and ```radec2icrf``` were provided by [Dr. Siegfried Eggl](https://github.com/eggls6) as part of this project. 
 * The TLE files for the satellites are created by [CelesTrak](https://celestrak.com/NORAD/elements/).
 * The functions for calculating bearing and cross track distance were adapted from [Chris Veness](http://www.movable-type.co.uk/scripts/latlong.html), available under the [MIT license](https://opensource.org/licenses/MIT). 
