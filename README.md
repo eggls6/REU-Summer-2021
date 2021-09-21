@@ -1,4 +1,4 @@
-# REU-Summer-2021
+# Starlink Impact on LSST
 This project assesses the magnitude of obstruction of Solar System object observations by current Starlink satellites in the LSST field of view.
 
 ## Table of contents
