@@ -45,6 +45,7 @@ Project is created with:
 
 ## Attributions
 [1] Jones, R. L., Bannister, M. T., Bolin, B. T., Chandler, C. O., Chesley, S. R., Eggl, S., Greenstreet, S., Holt, T. R., Hsieh, H. H., Ivezic, Z., Juric, M., Kelley, M. S., Knight, M. M., Malhotra, R., Oldroyd, W. J., Sarid, G., Schwamb, M. E., Snodgrass, C., Solontoi, M., &amp; Trilling, D. E. (2021). The Scientific Impact of the Vera C. Rubin Observatory’s Legacy Survey of Space and Time (LSST) for Solar System Science. Bulletin of the AAS, 53(4). [https://doi.org/10.3847/25c2cfeb.d8909f28](https://doi.org/10.3847/25c2cfeb.d8909f28)
+
 [2] Constance	Walker, & Jeffrey	Hall, & Lori	Allen, & Richard	Green, & Patrick	Seitzer, & Tony	Tyson, & Amanda	Bauer, & Kelsie	Krafton, & James	Lowenthal, & Joel	Parriott, & Phil	Puxley, & Tim	Abbott, & Gaspar	Bakos, & John	Barentine, & Cees	Bassa, & Blakeslee, John & Andrew	Bradshaw, & Cooke, Jeff & Daniel	Devost, & Yoachim, Peter. (2020). Impact of Satellite Constellations on Optical Astronomy and Recommendations Toward Mitigations. Bulletin of the AAS. 52. [https://doi.org/10.3847/25c2cfeb.346793b8](https://doi.org/10.3847/25c2cfeb.346793b8). 
 * The functions ```icrf2radec``` and ```radec2icrf``` were provided by [Dr. Siegfried Eggl](https://github.com/eggls6) as part of this project. 
 * The TLE files for the satellites are created by [CelesTrak](https://celestrak.com/NORAD/elements/).
