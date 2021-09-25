@@ -26,7 +26,7 @@ import datetime as dt
 path = "/data/projects/lsst/baseline_fbs_v1p7p1/"
 dir_list = os.listdir(path)
 
-dflist=[]
+dflist = []
 
 for d in dir_list:
     if(d[0:2]=='S1'):
@@ -37,7 +37,7 @@ for d in dir_list:
 dflist[0]
 
 # concatenate them into a single dataframe
-dfin=pd.concat(dflist)
+dfin = pd.concat(dflist)
 
 # we can sort the resulting dataframe by by FieldID
 dfin.sort_values(['FieldID'], inplace=True)
@@ -59,27 +59,27 @@ def icrf2radec(pos, deg=True):
     ra ... Right Ascension [deg]
     dec ... Declination [deg]
     """
-    norm=np.linalg.norm
-    array=np.array
-    arctan2=np.arctan2
-    arcsin=np.arcsin
-    rad2deg=np.rad2deg
-    modulo=np.mod
-    pix2=2.*np.pi
+    norm = np.linalg.norm
+    array = np.array
+    arctan2 = np.arctan2
+    arcsin = np.arcsin
+    rad2deg = np.rad2deg
+    modulo = np.mod
+    pix2 = 2.*np.pi
     
     if(pos.ndim>1):
-        r=norm(pos,axis=1)
-        xu=pos[:,0]/r
-        yu=pos[:,1]/r
-        zu=pos[:,2]/r
+        r = norm(pos,axis=1)
+        xu = pos[:,0]/r
+        yu = pos[:,1]/r
+        zu = pos[:,2]/r
     else:
-        r=norm(pos)
-        xu=pos[0]/r
-        yu=pos[1]/r
-        zu=pos[2]/r
+        r = norm(pos)
+        xu = pos[0]/r
+        yu = pos[1]/r
+        zu = pos[2]/r
     
-    phi=arctan2(yu,xu)
-    delta=arcsin(zu)
+    phi = arctan2(yu,xu)
+    delta = arcsin(zu)
     
     if(deg):
         ra = modulo(rad2deg(phi)+360,360)
@@ -104,10 +104,10 @@ def radec2icrf(ra, dec, deg=True):
     --------
     x,y,z ... 3D vector of unit length (ICRF)
     """
-    deg2rad=np.deg2rad
-    array=np.array
-    cos=np.cos
-    sin=np.sin
+    deg2rad = np.deg2rad
+    array = np.array
+    cos = np.cos
+    sin = np.sin
     
     if(deg):
         a = deg2rad(ra)
@@ -131,9 +131,11 @@ dates = dfin['FieldMJD'].unique()
 print("Earliest field date: " + str(min(dates)) + " or 10-01-2022 at 23:39:19.663 UTC")
 print("Last field date: " + str(max(dates)) + " or 10-30-2022 at 05:03:20.104 UTC")
 
+# open the TLE files
 with open('starlink tle.txt') as f:
     starlinks = f.read().splitlines() 
 
+# split up the list into 3-line lists for each satellite
 chunks = [starlinks[n:n + 3] for n in range(0, len(starlinks), 3)]
 
 print("There are " + str(len(chunks)) + " satellites")
@@ -189,24 +191,27 @@ def cross_track_distance(lat1, long1, lat2, long2, lat3, long3):
     
     return dist
 
-
+# Time calculations output warnings --> ignore them
 warnings.filterwarnings('ignore')
 
+# first iterate through each satellite
 for ch in chunks:
-    sat_num = ch[0].strip()  # STARLINK-xx
-    s = ch[1]
-    t = ch[2]
-    sat = sg.Satrec.twoline2rv(s, t)  # check each satellite against each field
+    sat_num = ch[0].strip()  # the label for each satellite --> STARLINK-xx
+    s = ch[1]  # first line of TLE set
+    t = ch[2]  # second line of TLE set
+    sat = sg.Satrec.twoline2rv(s, t)  
     
     flag_2 = False
 
+    # if True, satellite can't be propagated, so continue to next satellite
     if flag_2:
         continue
-                
+    
+    # check each satellite against each field
     for f in field_ids:
-        ra_vals = []  # for satellites
-        dec_vals = []  # for satellites
-        sat_times = []
+        ra_vals = []  # for satellites' right ascensions
+        dec_vals = []  # for satellites' declinations
+        sat_times = []  # for satellites' times
         
         data = dfin[dfin['FieldID']==f]  # all objects in the field
 
@@ -225,39 +230,43 @@ for ch in chunks:
         
         count = 1
         
-        # Propagate every 2.0 sec starting 30 sec before field time until 30 sec after
+        # Start 30 seconds before field time
         t_before = t - TimeDelta(30.0, format='sec')
         
+        # We're going to propagate every 2 seconds from 30 seconds before to 30 seconds after field time because exposure for the field is 30 seconds
+        # Because of this, there will be 61 total iterations of propagations
+        # If a satellite is within this time, it will leave a streak in the field image
         while count <= 61:
-            jd_t = t_before + 2400000.5  # convert mjd to jd for sgp4 calculation
-            fr, whole = math.modf(float(str(jd_t)))  # fr = stuff after decimal
+            jd_t = t_before + 2400000.5  # convert MJD to JD for sgp4 propagation calculation
+            fr, whole = math.modf(float(str(jd_t)))  # fr = digits after decimal of MJD
     
-            e, r, v = sat.sgp4(float(str(jd_t)), round(fr, 12))
+            e, r, v = sat.sgp4(float(str(jd_t)), round(fr, 12))  # r is [x,y,z] for propagated satellite
             x, y, z = r[0], r[1], r[2]
             length = np.sqrt(x**2 + y**2 + z**2)
             norm_coords = np.array([x/length, y/length, z/length])  # normalizing onto unit sphere
-            ra, dec = icrf2radec(norm_coords)  # convert to ra and dec
+            ra, dec = icrf2radec(norm_coords)  # convert to RA and Dec
             
-            if ra != ra:  # if nan (sat can't be propagated)
+            if ra != ra:  # if nan --> satellite can't be propagated to that time
                 flag = True
-                break  # don't bother looking at all the times in while loop
+                break  # don't bother looking at all the times --> break while loop
 
+            # if the object is in the field i.e. within 1 degree
             if (min_ra - 1.0 <= ra <= max_ra + 1.0) and (min_dec - 1.0 <= dec <= max_dec + 1.0):
                 ra_vals.append(ra)
                 dec_vals.append(dec)
                 sat_times.append(t_before.value)
     
-            t_before += t_change
-            count += 1
+            t_before += t_change  # Propagate 2.0 seconds
+            count += 1 
             
         if flag:
             print()
             print("Could not propagate " + sat_num)
             print()
             flag_2 = True
-            break  # break out of for loop of the fields, go to next satellite
+            break  # break out of for loop of the fields
                 
-        # only successful satellite points
+        # Only satellite points that are within the field of objects
         if any(ra_vals):
             good_obj_ra, good_obj_dec = [], []
             
@@ -275,15 +284,18 @@ for ch in chunks:
                 obj_long = np.deg2rad(obj_r)
                 obj_lat = np.deg2rad(obj_d)
 
-                dist = cross_track_distance(min_lat, min_long, max_lat, max_long, obj_lat, obj_long)
                 bound_d = 2.0 * np.pi/(180*3600)  # 2 arcseconds in radians
+
+                # calculate cross track distance between satellite streak and objects
+                dist = cross_track_distance(min_lat, min_long, max_lat, max_long, obj_lat, obj_long)
                 
+                # an object is considered obstructed if the satellite streak is within 2 arcseconds of it
                 if abs(dist) <= bound_d:
                     good_obj_ra.append(obj_r)
                     good_obj_dec.append(obj_d)
                     obj_count += 1
                     
-            # only successful object points 
+            # only plot objects that are obstructed 
             if any(good_obj_ra):
                 plt.figure(dpi=150,figsize=(4,4))
                 plt.scatter(ra_vals, dec_vals, s=1.5, label='Satellite')
@@ -300,4 +312,3 @@ for ch in chunks:
                 print()
                 print("Satellite times:")
                 print(str(sat_times))
-#                 print(str(sat_times)[1:-1])  # remove brackets from list output
