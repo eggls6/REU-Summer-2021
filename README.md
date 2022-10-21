@@ -52,4 +52,4 @@ Project is created with:
 * The functions for calculating bearing and cross track distance were adapted from [Chris Veness](http://www.movable-type.co.uk/scripts/latlong.html), available under the [MIT license](https://opensource.org/licenses/MIT). 
 
 ## License
-
+See the [LICENSE](LICENSE) file for license rights and limitations (MIT).
